@@ -34,34 +34,43 @@
     </div>
 
     <script>
-        function updateUI() {
+
+        window.onload = function() {
             var search = window.location.search;
             var hash = window.location.hash;
             var fullParams = search + hash;
             
-            if (fullParams.length < 10) return;
-    
+            if (fullParams.length < 10) { 
+                console.log("未偵測到驗證參數");
+                return; 
+            }
+
             var appLink = "io.supabase.texttoapk://login-callback/" + fullParams;
             var manualButtonHTML = '<a href="' + appLink + '" class="manual-btn">手動點此回到 App</a>';
-    
-            var ua = navigator.userAgent.toLowerCase();
-            var isAndroid = ua.indexOf("android") > -1;
-    
+
+            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            var isAndroid = /android/i.test(userAgent);
+
             if (isAndroid) {
                 document.getElementById('loading-spinner').style.display = 'none';
                 document.getElementById('main-message').innerHTML = "驗證已完成！<br>請點擊下方按鈕以返回應用程式。";
                 document.getElementById('hint-text').innerHTML = manualButtonHTML;
-            
             } else {
-                window.location.href = appLink; 
+                setTimeout(function() {
+                    var iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    iframe.src = appLink; 
+                    document.body.appendChild(iframe); 
+                }, 800);
+
+                setTimeout(function() {
+                    var hintElement = document.getElementById("hint-text");
+                    if (hintElement) {
+                        hintElement.innerHTML += '<br><br>' + manualButtonHTML;
+                    }
+                }, 1800);
             }
-        }
-    
-        if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", updateUI);
-        } else {
-            updateUI();
-        }
+        };
     </script>
 </body>
 </html>
