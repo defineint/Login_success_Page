@@ -26,7 +26,6 @@
         window.onload = function() {
             var search = window.location.search;
             var hash = window.location.hash;
-            
             var fullParams = search + hash;
             
             if (fullParams.length < 10) { 
@@ -36,12 +35,23 @@
     
             var appLink = "io.supabase.texttoapk://login-callback/" + fullParams;
             
-            window.location.href = appLink;
-    
+            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            var isAndroid = /android/i.test(userAgent);
+            
+            var autoRedirectDelay = isAndroid ? 2000 : 800;
+            
             setTimeout(function() {
-                document.querySelector(".hint").innerHTML += 
-                    '<br><a href="' + appLink + '" style="color: #673ab7; font-weight: bold;">手動點此回到 App</a>';
-            }, 1500);
+                window.location.href = appLink;
+            }, autoRedirectDelay);
+    
+            var manualFallbackDelay = autoRedirectDelay + 1000;
+            setTimeout(function() {
+                var hintElement = document.querySelector(".hint");
+                if (hintElement) {
+                    hintElement.innerHTML += 
+                        '<br><br><a href="' + appLink + '" style="color: white; background-color: #673ab7; font-weight: bold; text-decoration: none; padding: 10px 20px; border-radius: 8px; display: inline-block; margin-top: 5px;">手動點此回到 App</a>';
+                }
+            }, manualFallbackDelay);
         };
     </script>
 </body>
