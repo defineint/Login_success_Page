@@ -24,13 +24,24 @@
 
     <script>
         window.onload = function() {
-            
+            var search = window.location.search;
             var hash = window.location.hash;
-            var appLink = "io.supabase.texttoapk://login-callback/" + hash;
             
+            var fullParams = search + hash;
+            
+            if (fullParams.length < 10) { 
+                console.log("未偵測到驗證參數");
+                return; 
+            }
+    
+            var appLink = "io.supabase.texttoapk://login-callback/" + fullParams;
+            
+            window.location.href = appLink;
+    
             setTimeout(function() {
-                window.location.href = appLink;
-            }, 500);
+                document.querySelector(".hint").innerHTML += 
+                    '<br><a href="' + appLink + '" style="color: #673ab7; font-weight: bold;">手動點此回到 App</a>';
+            }, 1500);
         };
     </script>
 </body>
